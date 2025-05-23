@@ -1,0 +1,65 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String
+  password     String
+  profileImage String?   @map("profile_image")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime? @updatedAt @map("updated_at")
+  deletedAt    DateTime? @map("deleted_at")
+  Plot         Plot[]
+
+  @@map("user")
+}
+
+model Character {
+  id          String    @id @default(cuid())
+  name        String
+  fandom      String
+  history     String
+  description String
+  image       String
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+  Plot        Plot[]
+
+  @@map("character")
+}
+
+model Partner {
+  id        String    @id @default(cuid())
+  name      String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+  Plot      Plot[]
+
+  @@map("partner")
+}
+
+model Plot {
+  id          String    @id @default(cuid())
+  name        String
+  hasReply    Boolean   @default(false) @map("has_reply")
+  partnerId   String?   @map("partner_id")
+  partner     Partner?  @relation(fields: [partnerId], references: [id])
+  characterId String    @map("character_id")
+  character   Character @relation(fields: [characterId], references: [id])
+  authorId    String    @map("author_id")
+  author      User      @relation(fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime? @updatedAt @map("updated_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  @@map("plot")
+}
